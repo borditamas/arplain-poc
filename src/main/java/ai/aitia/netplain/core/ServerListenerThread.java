@@ -4,15 +4,15 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ServerListenerThread extends Thread {
 	
 	//=================================================================================================
 	// members
 	
-	private final static Log logger = LogFactory.getLog(ServerListenerThread.class);
+	private final static Logger logger = LoggerFactory.getLogger(ServerListenerThread.class);
 
 	private final int port;
 	private final String webroot;

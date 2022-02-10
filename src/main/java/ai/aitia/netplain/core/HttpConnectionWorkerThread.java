@@ -5,15 +5,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HttpConnectionWorkerThread extends Thread {
 	
 	//=================================================================================================
 	// members
 	
-	private final static Log logger = LogFactory.getLog(HttpConnectionWorkerThread.class);
+	private final static Logger logger = LoggerFactory.getLogger(HttpConnectionWorkerThread.class);
 	
 	private final Socket socket;
 	
@@ -35,10 +35,7 @@ public class HttpConnectionWorkerThread extends Thread {
 			inputStream= this.socket.getInputStream();
 			outputStream = this.socket.getOutputStream();
 			
-			int byte_;
-			while ((byte_ = inputStream.read()) >= 0) {
-				System.out.print((char)byte_);
-			}
+			//TODO read
 			
 			final String html = "<html><head><title>NetPlain POC</title></head><body><h1>This page was served by NetPlain from Aitia</h1></body></html>";
 			
