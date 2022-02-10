@@ -9,38 +9,45 @@ import org.slf4j.LoggerFactory;
 
 public class ServerListenerThread extends Thread {
 	
-	private final static Logger LOGGER = LoggerFactory.getLogger(ServerListenerThread.class);
+	//=================================================================================================
+	// members
+	
+	private final static Logger logger = LoggerFactory.getLogger(ServerListenerThread.class);
 
 	private final int port;
 	private final String webroot;
 	private final ServerSocket serverSocket;
 	
+	//=================================================================================================
+	// methods
 	
+	//-------------------------------------------------------------------------------------------------
 	public ServerListenerThread(final int port, final String webroot) throws IOException {
 		this.port = port;
 		this.webroot = webroot;
 		this.serverSocket = new ServerSocket(this.port);
 	}
 
+	//-------------------------------------------------------------------------------------------------
 	@Override
 	public void run() {
 		try {
-			while (serverSocket.isBound() && !serverSocket.isClosed()) {
-				final Socket socket = serverSocket.accept();
-				LOGGER.info(" * Connection accepted: " + socket.getInetAddress());
+			while (this.serverSocket.isBound() && !this.serverSocket.isClosed()) {
+				final Socket socket = this.serverSocket.accept();
+				logger.info(" * Connection accepted: " + socket.getInetAddress());
 				
 				final HttpConnectionWorkerThread workerThread = new HttpConnectionWorkerThread(socket);
 				workerThread.start();
 			}
 			
 		} catch (final IOException ex) {
-			LOGGER.error("Problem with setting socket", ex);
+			logger.error("Problem with setting socket", ex);
 			
 		} finally {
-			if (serverSocket != null) {
+			if (this.serverSocket != null) {
 				try {
-					serverSocket.close();
-				} catch (final IOException ex) { LOGGER.info("server socket closed", ex); }
+					this.serverSocket.close();
+				} catch (final IOException ex) { logger.info("server socket closed", ex); }
 			}
 		}
 	}	

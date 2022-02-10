@@ -7,15 +7,20 @@ import java.io.IOException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import ai.aitia.netplain.util.Json;
+import ai.aitia.netplain.util.JsonUtil;
 
 public class ConfigurationManager {
 
+	//=================================================================================================
+	// members
+	
 	private static ConfigurationManager manager;
 	private static Configuration currentConfig;
 
-	private ConfigurationManager() {}
+	//=================================================================================================
+	// methods
 	
+	//-------------------------------------------------------------------------------------------------
 	public static ConfigurationManager getInstance() {
 		if (manager == null) {
 			manager = new ConfigurationManager();
@@ -23,6 +28,7 @@ public class ConfigurationManager {
 		return manager;
 	}
 	
+	//-------------------------------------------------------------------------------------------------
 	public void loadConfigFile(final String filePath) {
 		FileReader fileReader;
 		try {
@@ -41,21 +47,28 @@ public class ConfigurationManager {
 		}
 		JsonNode conf;
 		try {
-			conf = Json.parse(sb.toString());
+			conf = JsonUtil.parse(sb.toString());
 		} catch (final IOException ex) {
 			throw new HttpConfiurationException("Error parsing the configuration file.", ex);
 		}
 		try {
-			currentConfig = Json.fromJson(conf, Configuration.class);
+			currentConfig = JsonUtil.fromJson(conf, Configuration.class);
 		} catch (final JsonProcessingException ex) {
 			throw new HttpConfiurationException("Error parsing the configuration file, internal.", ex);
 		}
 	}
 	
+	//-------------------------------------------------------------------------------------------------
 	public Configuration getCurrentConfig() {
 		if (currentConfig == null) {
 			throw new HttpConfiurationException("No current configuration set");
 		}
 		return currentConfig;
 	}
+	
+	//=================================================================================================
+	// assistant methods
+	
+	//-------------------------------------------------------------------------------------------------
+	private ConfigurationManager() {}
 }

@@ -10,22 +10,30 @@ import org.slf4j.LoggerFactory;
 
 public class HttpConnectionWorkerThread extends Thread {
 	
-	private final static Logger LOGGER = LoggerFactory.getLogger(HttpConnectionWorkerThread.class);
+	//=================================================================================================
+	// members
+	
+	private final static Logger logger = LoggerFactory.getLogger(HttpConnectionWorkerThread.class);
 	
 	private final Socket socket;
 	
+	//=================================================================================================
+	// methods
+	
+	//-------------------------------------------------------------------------------------------------
 	public HttpConnectionWorkerThread(final Socket socket) {
 		this.socket = socket;
 	}
 
+	//-------------------------------------------------------------------------------------------------
 	@Override
 	public void run() {
 		InputStream inputStream = null;
 		OutputStream outputStream = null;
 		
 		try {
-			inputStream= socket.getInputStream();
-			outputStream = socket.getOutputStream();
+			inputStream= this.socket.getInputStream();
+			outputStream = this.socket.getOutputStream();
 			
 			//TODO read
 			
@@ -42,26 +50,26 @@ public class HttpConnectionWorkerThread extends Thread {
 			
 			outputStream.write(response.getBytes());
 			
-			LOGGER.info(" * Connection processing finished");
+			logger.info(" * Connection processing finished");
 			
 		} catch (final IOException ex) {
-			LOGGER.error("Problem with commnication", ex);
+			logger.error("Problem with commnication", ex);
 			
 		} finally {
 			if (inputStream != null) {
 				try {
 					inputStream.close();
-				} catch (final IOException ex) { LOGGER.error("Problem with closing inputStream", ex); }				
+				} catch (final IOException ex) { logger.error("Problem with closing inputStream", ex); }				
 			}
 			if (outputStream !=  null) {
 				try {
 					outputStream.close();
-				} catch (final IOException ex) { LOGGER.error("Problem with closing outputStream", ex); }				
+				} catch (final IOException ex) { logger.error("Problem with closing outputStream", ex); }				
 			}
-			if (socket != null) {
+			if (this.socket != null) {
 				try {
-					socket.close();
-				} catch (final IOException ex) { LOGGER.error("Problem with closing socket", ex); }							
+					this.socket.close();
+				} catch (final IOException ex) { logger.error("Problem with closing socket", ex); }							
 			}
 		}
 	}	
