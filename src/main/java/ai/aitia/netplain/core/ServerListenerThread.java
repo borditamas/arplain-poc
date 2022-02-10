@@ -36,7 +36,7 @@ public class ServerListenerThread extends Thread {
 				final Socket socket = this.serverSocket.accept();
 				logger.info(" * Connection accepted: " + socket.getInetAddress());
 				
-				final HttpConnectionWorkerThread workerThread = new HttpConnectionWorkerThread(socket);
+				final ServerWorkerThread workerThread = new ServerWorkerThread(socket);
 				workerThread.start();
 			}
 			
