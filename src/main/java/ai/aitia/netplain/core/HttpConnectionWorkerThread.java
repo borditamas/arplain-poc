@@ -5,8 +5,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
+import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import ai.aitia.netplain.core.http.HttpParser;
 
 public class HttpConnectionWorkerThread extends Thread {
 	
@@ -16,6 +20,7 @@ public class HttpConnectionWorkerThread extends Thread {
 	private final static Logger logger = LoggerFactory.getLogger(HttpConnectionWorkerThread.class);
 	
 	private final Socket socket;
+	private final HttpParser parser = new HttpParser();
 	
 	//=================================================================================================
 	// methods
@@ -35,7 +40,12 @@ public class HttpConnectionWorkerThread extends Thread {
 			inputStream= this.socket.getInputStream();
 			outputStream = this.socket.getOutputStream();
 			
-			//TODO read
+			ClassicHttpRequest request = null;
+			try {
+				request = parser.parseRequest(inputStream);
+			} catch (HttpException ex) {
+				// TODO return error response
+			}
 			
 			final String html = "<html><head><title>NetPlain POC</title></head><body><h1>This page was served by NetPlain from Aitia</h1></body></html>";
 			
