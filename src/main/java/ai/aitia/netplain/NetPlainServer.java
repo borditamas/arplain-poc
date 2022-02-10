@@ -2,8 +2,8 @@ package ai.aitia.netplain;
 
 import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import ai.aitia.netplain.config.Configuration;
 import ai.aitia.netplain.config.ConfigurationManager;
@@ -14,7 +14,7 @@ public class NetPlainServer {
 	//=================================================================================================
 	// members
 	
-	private final static Logger logger = LoggerFactory.getLogger(NetPlainServer.class);
+	private final static Log logger = LogFactory.getLog(NetPlainServer.class);
 
 	//=================================================================================================
 	// methods
