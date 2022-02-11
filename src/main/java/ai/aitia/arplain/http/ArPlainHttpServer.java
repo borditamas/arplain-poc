@@ -1,4 +1,4 @@
-package ai.aitia.netplain.http;
+package ai.aitia.arplain.http;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -11,9 +11,9 @@ import com.sun.net.httpserver.HttpServer;
 
 import sun.net.httpserver.HttpServerImpl;
 
-public class NetPlainHttpServer {
+public class ArPlainHttpServer {
 	
-	private final static Logger logger = LoggerFactory.getLogger(NetPlainHttpServer.class);
+	private final static Logger logger = LoggerFactory.getLogger(ArPlainHttpServer.class);
 	
 	private static HttpServer httpServer;
 
@@ -21,7 +21,7 @@ public class NetPlainHttpServer {
 		try {
 			httpServer = HttpServerImpl.create(new InetSocketAddress(port), backlog);
 			final HttpContext httpContext = httpServer.createContext("/");
-			httpContext.setHandler(new NetPlainHttpHandler());
+			httpContext.setHandler(new ArPlainHttpHandler());
 			
 		} catch (final IOException ex) {
 			// TODO Auto-generated catch block
@@ -31,6 +31,6 @@ public class NetPlainHttpServer {
 	
 	public static void start() {
 		httpServer.start();
-		logger.info("NetPlainServer listening HTTP on port: " + httpServer.getAddress().getPort());		
+		logger.info("ArPlain listening HTTP on port: " + httpServer.getAddress().getPort());		
 	}
 }

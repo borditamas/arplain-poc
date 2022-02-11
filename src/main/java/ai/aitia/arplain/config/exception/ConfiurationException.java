@@ -1,4 +1,4 @@
-package ai.aitia.netplain.config.exception;
+package ai.aitia.arplain.config.exception;
 
 public class ConfiurationException extends RuntimeException {
 

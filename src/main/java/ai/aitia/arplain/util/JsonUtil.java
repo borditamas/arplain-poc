@@ -1,4 +1,4 @@
-package ai.aitia.netplain.util;
+package ai.aitia.arplain.util;
 
 import java.io.IOException;
 

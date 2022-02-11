@@ -1,11 +1,11 @@
-package ai.aitia.netplain.http;
+package ai.aitia.arplain.http;
 
 import java.io.IOException;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-public class NetPlainHttpHandler implements HttpHandler {
+public class ArPlainHttpHandler implements HttpHandler {
 
 	@Override
 	public void handle(final HttpExchange exchange) throws IOException {

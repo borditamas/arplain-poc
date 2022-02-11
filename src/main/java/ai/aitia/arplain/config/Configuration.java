@@ -1,4 +1,4 @@
-package ai.aitia.netplain.config;
+package ai.aitia.arplain.config;
 
 public class Configuration {
 

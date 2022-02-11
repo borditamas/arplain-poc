@@ -1,4 +1,4 @@
-package ai.aitia.netplain.config;
+package ai.aitia.arplain.config;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -7,8 +7,8 @@ import java.io.IOException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import ai.aitia.netplain.config.exception.ConfiurationException;
-import ai.aitia.netplain.util.JsonUtil;
+import ai.aitia.arplain.config.exception.ConfiurationException;
+import ai.aitia.arplain.util.JsonUtil;
 
 public class ConfigurationManager {
 
