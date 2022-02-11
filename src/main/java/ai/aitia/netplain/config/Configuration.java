@@ -2,12 +2,16 @@ package ai.aitia.netplain.config;
 
 public class Configuration {
 
-	private int port;
-	private String webroot;
+	private boolean httpEnabled;
+	private int httpPort;
+	private int httpBacklog;
 	
-	public int getPort() { return port; }
-	public void setPort(final int port) { this.port = port; }
+	public int getHttpPort() { return httpPort; }
+	public void setHttpPort(final int httpPort) { this.httpPort = httpPort; }
 	
-	public String getWebroot() { return webroot; }
-	public void setWebroot(final String webroot) { this.webroot = webroot; }
+	public int getHttpBacklog() { return httpBacklog; }
+	public void setHttpBacklog(final int httpBacklog) { this.httpBacklog = httpBacklog; }
+	
+	public boolean isHttpEnabled() { return httpEnabled; }
+	public void setHttpEnabled(final boolean httpEnabled) { this.httpEnabled = httpEnabled; }
 }

@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-public class Json {
+public class JsonUtil {
 
 	private static ObjectMapper mapper = defaultMapper();
 	

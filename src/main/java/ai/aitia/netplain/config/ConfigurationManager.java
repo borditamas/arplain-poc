@@ -7,7 +7,8 @@ import java.io.IOException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import ai.aitia.netplain.util.Json;
+import ai.aitia.netplain.config.exception.ConfiurationException;
+import ai.aitia.netplain.util.JsonUtil;
 
 public class ConfigurationManager {
 
@@ -28,7 +29,7 @@ public class ConfigurationManager {
 		try {
 			fileReader = new FileReader(filePath);
 		} catch (final FileNotFoundException ex) {
-			throw new HttpConfiurationException(ex);
+			throw new ConfiurationException(ex);
 		}
 		final StringBuffer sb = new StringBuffer();
 		int i;
@@ -37,24 +38,24 @@ public class ConfigurationManager {
 				sb.append((char)i);
 			}
 		} catch (final IOException ex) {
-			throw new HttpConfiurationException(ex);
+			throw new ConfiurationException(ex);
 		}
 		JsonNode conf;
 		try {
-			conf = Json.parse(sb.toString());
+			conf = JsonUtil.parse(sb.toString());
 		} catch (final IOException ex) {
-			throw new HttpConfiurationException("Error parsing the configuration file.", ex);
+			throw new ConfiurationException("Error parsing the configuration file.", ex);
 		}
 		try {
-			currentConfig = Json.fromJson(conf, Configuration.class);
+			currentConfig = JsonUtil.fromJson(conf, Configuration.class);
 		} catch (final JsonProcessingException ex) {
-			throw new HttpConfiurationException("Error parsing the configuration file, internal.", ex);
+			throw new ConfiurationException("Error parsing the configuration file, internal.", ex);
 		}
 	}
 	
 	public Configuration getCurrentConfig() {
 		if (currentConfig == null) {
-			throw new HttpConfiurationException("No current configuration set");
+			throw new ConfiurationException("No current configuration set");
 		}
 		return currentConfig;
 	}

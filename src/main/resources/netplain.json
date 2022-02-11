@@ -1,0 +1,5 @@
+{
+	"httpEnabled": true,
+	"httpPort": 9090,
+	"httpBacklog": 100
+}
