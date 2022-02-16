@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpServer;
 
+import ai.aitia.arplain.http.endpoint.HttpEndpoint;
+import ai.aitia.arplain.http.endpoint.HttpEndpointRegister;
 import sun.net.httpserver.HttpServerImpl;
 
 public class ArPlainHttpServer {
@@ -29,7 +31,12 @@ public class ArPlainHttpServer {
 		}
 	}
 	
+	public static void registerHttpEndpoint(final HttpEndpoint endpoint) {
+		HttpEndpointRegister.add(endpoint);
+	}
+	
 	public static void start() {
+		HttpEndpointRegister.flush();
 		httpServer.start();
 		logger.info("ArPlain listening HTTP on port: " + httpServer.getAddress().getPort());		
 	}
