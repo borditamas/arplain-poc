@@ -44,10 +44,14 @@ public class ArPlainHttpSocketWorker extends Thread {
 				return;
 			}
 			
+			if (message == null) {
+				return; // means no message on the socket
+			}
+			
 			//TODO Access Control Filter
 			
-			//TODO find handler
-			//final HttpResponse response = handler.handle();
+			final HttpRequestHandler handler = HttpEndpointMapper.findHandler(message.getMethod(), message.getPath());
+			final HttpResponse response = handler.handle();
 			
 			//TODO encode response
 			

@@ -26,7 +26,15 @@ public class HttpMessageDecoder {
 		
 		parseRequestLine(reader, decodedInbound);
 		
-		//TODO
+		//TODO headers
+		//TODO body
+		
+		if (decodedInbound.getMethod() == null) {
+			logger.info("No incoming HTTP message has arrived");
+			return null;
+		}
+		
+		logger.info("Incoming HTTP message decoded");
 		return decodedInbound;
 	}
 	
