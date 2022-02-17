@@ -8,14 +8,16 @@ import java.net.Socket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.netty.handler.codec.http.HttpMessage;
+import ai.aitia.arplain.http.decode.HttpDecodedRequestMessage;
+import ai.aitia.arplain.http.decode.HttpMessageDecoder;
+import ai.aitia.arplain.http.decode.exception.HttpDecodingException;
 
 public class ArPlainHttpHandler extends Thread {
 	
 	private final static Logger logger = LoggerFactory.getLogger(ArPlainHttpHandler.class);
 
 	private final Socket socket;
-	private final HttpMessgeDecoder decoder = new HttpMessgeDecoder();
+	private final HttpMessageDecoder decoder = new HttpMessageDecoder();
 	
 	public ArPlainHttpHandler(final Socket socket) {
 		this.socket = socket;
@@ -30,7 +32,12 @@ public class ArPlainHttpHandler extends Thread {
 			inputStream= this.socket.getInputStream();
 			outputStream = this.socket.getOutputStream();
 			
-			final HttpMessage message = decoder.decode(inputStream);
+			try {
+				final HttpDecodedRequestMessage message = decoder.decode(inputStream);
+				
+			} catch (final HttpDecodingException e) {
+				// TODO: handle exception
+			}
 			
 			//TODO Access Control Filter
 			
@@ -40,7 +47,7 @@ public class ArPlainHttpHandler extends Thread {
 			
 			logger.info(" Http meassage processing finished");
 			
-		} catch (final IOException ex) {
+		} catch (final Exception ex) {
 			logger.error("Problem with commnication", ex);
 			
 		} finally {

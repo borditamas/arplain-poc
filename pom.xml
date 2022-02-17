@@ -12,13 +12,6 @@
 	</properties>
 	
 	<dependencies>
-		<!-- HTTP MESSAGE PARSING -->
-		<dependency>
-			<groupId>io.netty</groupId>
-			<artifactId>netty-codec-http</artifactId>
-			<version>5.0.0.Alpha2</version>
-		</dependency>
-		
 		<!-- OBJECT MAPPING -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
