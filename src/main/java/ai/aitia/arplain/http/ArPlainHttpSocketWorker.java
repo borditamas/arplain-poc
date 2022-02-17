@@ -11,15 +11,18 @@ import org.slf4j.LoggerFactory;
 import ai.aitia.arplain.http.decode.HttpDecodedRequestMessage;
 import ai.aitia.arplain.http.decode.HttpMessageDecoder;
 import ai.aitia.arplain.http.decode.exception.HttpDecodingException;
+import ai.aitia.arplain.http.endpoint.HttpEndpointMapper;
+import ai.aitia.arplain.http.endpoint.HttpRequestHandler;
+import ai.aitia.arplain.http.properties.HttpResponse;
 
-public class ArPlainHttpHandler extends Thread {
+public class ArPlainHttpSocketWorker extends Thread {
 	
-	private final static Logger logger = LoggerFactory.getLogger(ArPlainHttpHandler.class);
+	private final static Logger logger = LoggerFactory.getLogger(ArPlainHttpSocketWorker.class);
 
 	private final Socket socket;
 	private final HttpMessageDecoder decoder = new HttpMessageDecoder();
 	
-	public ArPlainHttpHandler(final Socket socket) {
+	public ArPlainHttpSocketWorker(final Socket socket) {
 		this.socket = socket;
 	}
 
@@ -32,18 +35,23 @@ public class ArPlainHttpHandler extends Thread {
 			inputStream= this.socket.getInputStream();
 			outputStream = this.socket.getOutputStream();
 			
+			//Decode
+			final HttpDecodedRequestMessage message;
 			try {
-				final HttpDecodedRequestMessage message = decoder.decode(inputStream);
-				
-			} catch (final HttpDecodingException e) {
+				message = decoder.decode(inputStream);				
+			} catch (final HttpDecodingException ex) {
 				// TODO: handle exception
+				return;
 			}
 			
 			//TODO Access Control Filter
 			
-			//TODO map to endpoint
+			//TODO find handler
+			//final HttpResponse response = handler.handle();
 			
-			//TODO response
+			//TODO encode response
+			
+			//TODO write output stream
 			
 			logger.info(" Http meassage processing finished");
 			

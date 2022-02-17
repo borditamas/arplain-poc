@@ -29,13 +29,14 @@ public class ArPlainHttpServer extends Thread {
 	@Override
 	public void run() {
 		HttpEndpointRegister.flush();
+		logger.info("Http Server taking off...");
 		
 		try {
 			while (this.serverSocket.isBound() && !this.serverSocket.isClosed()) {
 				final Socket socket = this.serverSocket.accept();
 				logger.info(" * Connection accepted: " + socket.getInetAddress());
 				
-				final ArPlainHttpHandler handler = new ArPlainHttpHandler(socket);
+				final ArPlainHttpSocketWorker handler = new ArPlainHttpSocketWorker(socket);
 				handler.start();
 			}
 			

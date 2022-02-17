@@ -10,7 +10,7 @@ public class HttpEndpointProperties {
 	private String key = "";
 	
 	private HttpMethod method;
-	private String path;
+	private String path = "/";
 	private final List<HttpPathVariableType> pathVariables = new ArrayList<HttpPathVariableType>();
 	private final List<HttpQueryParam> queryParameters = new ArrayList<HttpQueryParam>();
 	private Class<?> payloadType;
@@ -45,6 +45,6 @@ public class HttpEndpointProperties {
 	}
 	
 	private void updateKey() {		
-		this.key = HttpEndpointMapper.defineEndpointKey(this.method.name(), this.path);
+		this.key = HttpEndpointMapper.defineEndpointKey(this.method, this.path);
 	}
 }

@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ai.aitia.arplain.http.decode.exception.HttpDecodingException;
+import ai.aitia.arplain.http.endpoint.HttpEndpointMapper;
 import ai.aitia.arplain.http.properties.HttpMethod;
 import ai.aitia.arplain.http.properties.HttpStatus;
 import ai.aitia.arplain.http.properties.HttpVersion;
@@ -11,14 +12,20 @@ import ai.aitia.arplain.http.properties.HttpVersion;
 public class HttpDecodedRequestMessage {
 	
 	private final static Logger logger = LoggerFactory.getLogger(HttpDecodedRequestMessage.class);
-
+	private final static char queryStart = '?';
+	private final static char queryDelim = '=';
+	
 	private HttpMethod method;
-	private String target;
+	private String originalTarget;
+	private String targetWithoutQueryParams;
+	private String path;
 	private HttpVersion bestCompatibleVersion;
 	private String originalVersionLiteral;
 	
 	public HttpMethod getMethod() { return method; }
-	public String getTarget() { return target; }
+	public String getOriginalTarget() { return originalTarget; }
+	public String getTargetWithoutQueryParams() { return targetWithoutQueryParams; }
+	public String getPath() { return path; }
 	public HttpVersion getBestCompatibleVersion() { return bestCompatibleVersion; }	
 	public String getOriginalVersionLiteral() { return originalVersionLiteral; }
 	
@@ -37,8 +44,29 @@ public class HttpDecodedRequestMessage {
 		if (target == null || target.length() == 0) {
 			throw new HttpDecodingException(HttpStatus.INTERNAL_SERVER_ERROR_500);
 		}
-		this.target = target;
-		logger.info("Target: {}", this.target);
+		this.originalTarget = target;
+		logger.info("Target: {}", this.originalTarget);
+		
+		final StringBuilder sb = new StringBuilder();
+		for (char ch : target.toCharArray()) {
+			if (ch == queryStart) {
+				break;
+			} else {
+				sb.append(ch);
+			}
+		}
+		this.targetWithoutQueryParams = sb.toString();
+		sb.delete(0, sb.length());
+		logger.info("Target w/o query: {}", this.targetWithoutQueryParams);
+		
+		final String mappedPath = HttpEndpointMapper.mapPath(this.method, this.targetWithoutQueryParams);
+		if (mappedPath == null) {
+			throw new HttpDecodingException(HttpStatus.NOT_FOUND_404);
+		}
+		this.path = mappedPath;
+		logger.info("Path: {}", this.path);
+		
+		//TODO path variables
 	}
 	
 	public void parseVersion(final String versionStr) throws HttpDecodingException {
