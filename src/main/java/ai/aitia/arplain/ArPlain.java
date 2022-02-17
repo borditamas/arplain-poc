@@ -1,5 +1,7 @@
 package ai.aitia.arplain;
 
+import java.io.IOException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,8 +21,13 @@ public class ArPlain {
 		
 		if (config.isHttpEnabled()) {
 			logger.info("HTTP is enabled");
-			ArPlainHttpServer.init(config.getHttpPort(), config.getHttpBacklog());
-			ArPlainHttpServer.start();			
+			try {
+				final ArPlainHttpServer httpServer = new ArPlainHttpServer(config.getHttpPort(), config.getHttpBacklog());
+				httpServer.start();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 }

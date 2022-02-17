@@ -1,43 +1,54 @@
 package ai.aitia.arplain.http;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.net.httpserver.HttpContext;
-import com.sun.net.httpserver.HttpServer;
-
 import ai.aitia.arplain.http.endpoint.HttpEndpoint;
 import ai.aitia.arplain.http.endpoint.HttpEndpointRegister;
-import sun.net.httpserver.HttpServerImpl;
 
-public class ArPlainHttpServer {
+public class ArPlainHttpServer extends Thread {
 	
 	private final static Logger logger = LoggerFactory.getLogger(ArPlainHttpServer.class);
 	
-	private static HttpServer httpServer;
-
-	public static void init(final int port, final int backlog) {
-		try {
-			httpServer = HttpServerImpl.create(new InetSocketAddress(port), backlog);
-			final HttpContext httpContext = httpServer.createContext("/");
-			httpContext.setHandler(new ArPlainHttpHandler());
-			
-		} catch (final IOException ex) {
-			// TODO Auto-generated catch block
-			ex.printStackTrace();
-		}
+	private final int port;
+	private final ServerSocket serverSocket;
+	
+	public ArPlainHttpServer(final int port, final int backlog) throws IOException {
+		this.port = port;
+		this.serverSocket = new ServerSocket(this.port);
 	}
 	
-	public static void registerHttpEndpoint(final HttpEndpoint endpoint) {
+	public void registerHttpEndpoint(final HttpEndpoint endpoint) {
 		HttpEndpointRegister.add(endpoint);
 	}
 	
-	public static void start() {
+	@Override
+	public void run() {
 		HttpEndpointRegister.flush();
-		httpServer.start();
-		logger.info("ArPlain listening HTTP on port: " + httpServer.getAddress().getPort());		
+		
+		try {
+			while (this.serverSocket.isBound() && !this.serverSocket.isClosed()) {
+				final Socket socket = this.serverSocket.accept();
+				logger.info(" * Connection accepted: " + socket.getInetAddress());
+				
+				final ArPlainHttpHandler handler = new ArPlainHttpHandler(socket);
+				handler.start();
+			}
+			
+		} catch (final IOException ex) {
+			logger.error("Problem with setting socket", ex);
+			
+		} finally {
+			if (this.serverSocket != null) {
+				try {
+					this.serverSocket.close();
+				} catch (final IOException ex) { logger.info("server socket closed", ex); }
+			}
+		}
+		logger.info("ArPlain listening HTTP on port: " + port);		
 	}
 }
