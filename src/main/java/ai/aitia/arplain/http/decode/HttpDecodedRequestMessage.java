@@ -125,17 +125,19 @@ public class HttpDecodedRequestMessage {
 		String tempKey = null;
 		for (final String header : rawHeaders) {
 			final char[] headerArray = header.toCharArray();
-			final boolean delimiterFound = false;
+			boolean delimiterFound = false;
 			for (final char ch : headerArray) {
 				if (!delimiterFound && ch == headerDelimiter) {
 					tempKey = sb.toString();
 					this.headers.putIfAbsent(tempKey, new ArrayList<>());
-					sb.delete(0, sb.length());					
+					sb.delete(0, sb.length());	
+					delimiterFound = true;
 				} else {
 					sb.append(ch);
 				}
 			}
 			this.headers.get(tempKey).add(sb.toString());
+			sb.delete(0, sb.length());
 		}
 	}
 	
