@@ -32,10 +32,10 @@ public class HttpMessageDecoder {
 				return null;
 			}
 			
-			parseHeaders(reader, decodedInbound);
+			parseHeaders(reader, decodedInbound);			
 			
-			parseBody(in, decodedInbound);
-			
+			parseBody(in, decodedInbound);				
+					
 			
 			logger.info("Incoming HTTP message decoded");
 			return decodedInbound;			
@@ -103,6 +103,7 @@ public class HttpMessageDecoder {
 						byte_ = reader.read();
 						if (byte_ == LF) {
 							//End of headers							
+							request.parseHeaders(rawHeaders);
 							return;
 						} else {
 							throw new HttpDecodingException(HttpStatus.BAD_REQUEST_400);
@@ -110,6 +111,7 @@ public class HttpMessageDecoder {
 					} else {
 						//new header begins
 						rawHeaders.add(processingDataBuffer.toString());
+						System.out.println(processingDataBuffer.toString());
 						processingDataBuffer.delete(0, processingDataBuffer.length());
 					}
 				} else {
@@ -118,9 +120,7 @@ public class HttpMessageDecoder {
 			}
 			
 			processingDataBuffer.append((char)byte_);
-		}
-		
-		request.parseHeaders(rawHeaders);
+		}		
 	}
 	
 	private void parseBody(final InputStream in, final HttpDecodedRequestMessage request) throws IOException {

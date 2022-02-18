@@ -3,6 +3,7 @@ package ai.aitia.arplain.http.decode;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,17 +20,19 @@ public class HttpDecodedRequestMessage {
 	
 	private final static Logger logger = LoggerFactory.getLogger(HttpDecodedRequestMessage.class);
 	private final static char queryStart = '?';
+	private final static char headerDelimiter = ':';
 	
 	private HttpMethod method;
 	private String originalTarget;
 	private String targetWithoutQueryParams;
-	private Map<String, List<String>> queryParams;
+	private Map<String,List<String>> queryParams;
 	private String path;
 	private List<String> pathVars;
 	private HttpVersion bestCompatibleVersion;
 	private String originalVersionLiteral;
 	
 	private List<String> rawHeaders;
+	private Map<String,List<String>> headers;
 	
 	private byte[] bodyByteArray;
 	
@@ -40,7 +43,9 @@ public class HttpDecodedRequestMessage {
 	public String getPath() { return path; }
 	public List<String> getPathVars() { return pathVars; }
 	public HttpVersion getBestCompatibleVersion() { return bestCompatibleVersion; }	
-	public String getOriginalVersionLiteral() { return originalVersionLiteral; }	
+	public String getOriginalVersionLiteral() { return originalVersionLiteral; }
+	public List<String> getRawHeaders() { return rawHeaders; }
+	public Map<String, List<String>> getHeaders() { return headers; }
 	public byte[] getBodyByteArray() { return bodyByteArray; }
 	
 	public void parseMethod(final String methodStr) throws HttpDecodingException {
@@ -114,7 +119,24 @@ public class HttpDecodedRequestMessage {
 	
 	public void parseHeaders(final List<String> rawHeaders) {
 		this.rawHeaders = rawHeaders;
-		//TODO parse headers
+		this.headers = new HashMap<>();
+		
+		final StringBuilder sb = new StringBuilder();
+		String tempKey = null;
+		for (final String header : rawHeaders) {
+			final char[] headerArray = header.toCharArray();
+			final boolean delimiterFound = false;
+			for (final char ch : headerArray) {
+				if (!delimiterFound && ch == headerDelimiter) {
+					tempKey = sb.toString();
+					this.headers.putIfAbsent(tempKey, new ArrayList<>());
+					sb.delete(0, sb.length());					
+				} else {
+					sb.append(ch);
+				}
+			}
+			this.headers.get(tempKey).add(sb.toString());
+		}
 	}
 	
 	public void setBodyByteArray(final byte[] bodyByteArray) {
