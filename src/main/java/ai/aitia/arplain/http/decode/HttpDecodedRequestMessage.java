@@ -99,7 +99,7 @@ public class HttpDecodedRequestMessage {
 				this.bestCompatibleVersion = compatibleVersion;
 				logger.info("Version Compatible: {}", this.bestCompatibleVersion.literal);
 			} else {
-				throw new HttpDecodingException(HttpStatus.VERSION_NOT_SUPPORTED_505);
+				throw new HttpDecodingException(HttpStatus.HTTP_VERSION_NOT_SUPPORTED_505);
 			}
 		}
 	}
