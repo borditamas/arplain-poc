@@ -12,8 +12,9 @@ public class HttpEndpointRegister {
 	}
 	
 	public static void flush() {
-		for (HttpEndpoint endpoint : endpoints) {
+		for (final HttpEndpoint endpoint : endpoints) {
 			HttpEndpointMapper.put(endpoint);
 		}
+		endpoints.clear();
 	}
 }

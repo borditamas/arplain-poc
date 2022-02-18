@@ -1,5 +1,8 @@
 package ai.aitia.arplain.http.decode;
 
+import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +21,7 @@ public class HttpDecodedRequestMessage {
 	private HttpMethod method;
 	private String originalTarget;
 	private String targetWithoutQueryParams;
+	private Map<String, List<String>> queryParams;
 	private String path;
 	private HttpVersion bestCompatibleVersion;
 	private String originalVersionLiteral;
@@ -25,6 +29,7 @@ public class HttpDecodedRequestMessage {
 	public HttpMethod getMethod() { return method; }
 	public String getOriginalTarget() { return originalTarget; }
 	public String getTargetWithoutQueryParams() { return targetWithoutQueryParams; }
+	public Map<String, List<String>> getQueryParams() { return queryParams; }
 	public String getPath() { return path; }
 	public HttpVersion getBestCompatibleVersion() { return bestCompatibleVersion; }	
 	public String getOriginalVersionLiteral() { return originalVersionLiteral; }
@@ -48,16 +53,25 @@ public class HttpDecodedRequestMessage {
 		logger.info("Target: {}", this.originalTarget);
 		
 		final StringBuilder sb = new StringBuilder();
+		boolean hasQuery = false;
 		for (char ch : target.toCharArray()) {
-			if (ch == queryStart) {
-				break;
+			if (!hasQuery && ch == queryStart) {
+				hasQuery = true;
+				this.targetWithoutQueryParams = sb.toString();
+				logger.info("Target w/o query: {}", this.targetWithoutQueryParams);
+				sb.delete(0, sb.length());
 			} else {
 				sb.append(ch);
 			}
 		}
-		this.targetWithoutQueryParams = sb.toString();
-		sb.delete(0, sb.length());
-		logger.info("Target w/o query: {}", this.targetWithoutQueryParams);
+		if (hasQuery) {
+			final Map<String, List<String>> extractedQueryParams = HttpEndpointMapper.extractQueryParams(sb.toString());
+			if (extractedQueryParams == null) {
+				throw new HttpDecodingException(HttpStatus.BAD_REQUEST_400);
+			}
+			this.queryParams = extractedQueryParams;
+			logger.info("QueryParams extracted");
+		}
 		
 		final String mappedPath = HttpEndpointMapper.mapPath(this.targetWithoutQueryParams);
 		if (mappedPath == null) {
