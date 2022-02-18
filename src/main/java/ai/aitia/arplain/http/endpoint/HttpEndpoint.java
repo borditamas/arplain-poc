@@ -9,8 +9,12 @@ public abstract class HttpEndpoint implements HttpRequestHandler {
 	
 	private final HttpEndpointProperties props = new HttpEndpointProperties();
 
-	public String getKey() {
-		return this.props.getKey();
+	public HttpMethod getMethod() {
+		return this.props.getMethod();
+	}
+	
+	public String getPath() {
+		return this.props.getPath();
 	}
 	
 	public void setMethod(HttpMethod method) {

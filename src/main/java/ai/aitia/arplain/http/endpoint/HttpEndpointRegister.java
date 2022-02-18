@@ -13,7 +13,7 @@ public class HttpEndpointRegister {
 	
 	public static void flush() {
 		for (HttpEndpoint endpoint : endpoints) {
-			HttpEndpointMapper.put(endpoint.getKey(), endpoint);
+			HttpEndpointMapper.put(endpoint);
 		}
 	}
 }

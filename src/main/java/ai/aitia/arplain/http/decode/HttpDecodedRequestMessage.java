@@ -59,9 +59,11 @@ public class HttpDecodedRequestMessage {
 		sb.delete(0, sb.length());
 		logger.info("Target w/o query: {}", this.targetWithoutQueryParams);
 		
-		final String mappedPath = HttpEndpointMapper.mapPath(this.method, this.targetWithoutQueryParams);
+		final String mappedPath = HttpEndpointMapper.mapPath(this.targetWithoutQueryParams);
 		if (mappedPath == null) {
 			throw new HttpDecodingException(HttpStatus.NOT_FOUND_404);
+		}else if (!HttpEndpointMapper.methodIsAllowed(mappedPath, method)) {
+			throw new HttpDecodingException(HttpStatus.METHOD_NOT_ALLOWED_405);
 		}
 		this.path = mappedPath;
 		logger.info("Path: {}", this.path);

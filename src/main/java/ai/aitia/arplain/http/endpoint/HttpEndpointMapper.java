@@ -1,36 +1,42 @@
 package ai.aitia.arplain.http.endpoint;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import ai.aitia.arplain.http.properties.HttpMethod;
 
 public class HttpEndpointMapper {
 	
 	private static final char keyDelimiter = ':';
-	private static final Map<String,HttpEndpoint> map = new HashMap<>();
 	
-	public static void put(final String key, final HttpEndpoint endpoint) {
+	private static final Map<String,HttpEndpoint> mapToEndpoints = new HashMap<>();
+	private static final Map<String,Set<HttpMethod>> mapToMethods = new HashMap<>();
+	
+	public static void put(final HttpEndpoint endpoint) {
 		if (!(endpoint instanceof HttpRequestHandler)) {
 			// TODO throw
 		}		
 		//TODO throw if already contains
-		map.put(key, endpoint);
+		mapToEndpoints.put(defineEndpointKey(endpoint.getMethod(), endpoint.getPath()), endpoint);
+		mapToMethods.putIfAbsent(endpoint.getPath(), new HashSet<>());
+		mapToMethods.get(endpoint.getPath()).add(endpoint.getMethod());
 	}
 	
-	public static String mapPath(final HttpMethod method, final String targetWithoutQuery) {
-		final char[] targetArray = HttpEndpointMapper.defineEndpointKey(method, targetWithoutQuery).toCharArray();
+	public static String mapPath(final String targetWithoutQuery) {
+		final char[] targetArray = targetWithoutQuery.toCharArray();
 		String bestFit = "";
-		for (final String key : map.keySet()) {
-			if (key.length() <= targetArray.length) {
-				final char[] keyArray = key.toCharArray();
-				for (int i = 0; i < keyArray.length; i++) {
-					if (keyArray[i] != targetArray[i]) {
+		for (final String path : mapToMethods.keySet()) {
+			if (path.length() <= targetArray.length) {
+				final char[] pathArray = path.toCharArray();
+				for (int i = 0; i < pathArray.length; i++) {
+					if (pathArray[i] != targetArray[i]) {
 						break;
 					}
 				}
-				if (bestFit.length() < key.length()) {
-					bestFit = key;
+				if (bestFit.length() < path.length()) {
+					bestFit = path;
 				}
 			}
 		}
@@ -39,14 +45,21 @@ public class HttpEndpointMapper {
 			return null;
 		}
 		
-		return bestFit.substring(method.name().length() + 1);
+		return bestFit;
+	}
+	
+	public static boolean methodIsAllowed(final String path, final HttpMethod method) {
+		if (mapToMethods.containsKey(path)) {
+			return mapToMethods.get(path).contains(method);
+		}		
+		return false;
 	}
 	
 	public static HttpRequestHandler findHandler(final HttpMethod method, final String path) {
-		return map.get(HttpEndpointMapper.defineEndpointKey(method, path));
+		return mapToEndpoints.get(defineEndpointKey(method, path));
 	}
 	
-	public static String defineEndpointKey(final HttpMethod method, final String path) {
+	private static String defineEndpointKey(final HttpMethod method, final String path) {
 		final StringBuilder sb = new StringBuilder(method.name());
 		sb.append(keyDelimiter);
 		sb.append(path.trim());
