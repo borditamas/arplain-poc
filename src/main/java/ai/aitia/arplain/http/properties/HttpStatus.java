@@ -11,15 +11,14 @@ public enum HttpStatus {
 	NOT_IMPLEMENTED_501(501, "Not Implemented"),
 	HTTP_VERSION_NOT_SUPPORTED_505(505, "HTTP Version Not Supported");
 
-	public final int code;
-	public final String msg;
+	private final int code;
+	private final String msg;
 	
 	HttpStatus(final int code, final String msg) {
 		this.code = code;
 		this.msg = msg;
 	}
 
-	public int getCode() {
-		return code;
-	}
+	public int getCode() { return code; }
+	public String getMsg() { return msg; }
 }

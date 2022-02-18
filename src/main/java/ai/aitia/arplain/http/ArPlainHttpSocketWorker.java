@@ -40,7 +40,7 @@ public class ArPlainHttpSocketWorker extends Thread {
 			try {
 				message = decoder.decode(inputStream);				
 			} catch (final HttpDecodingException ex) {
-				// TODO: handle exception
+				logger.info("HttpDecodingException: {} {}", ex.getStatus().getCode(), ex.getStatus().getMsg());
 				return;
 			}
 			
@@ -57,7 +57,7 @@ public class ArPlainHttpSocketWorker extends Thread {
 			
 			//TODO write output stream
 			
-			logger.info(" Http meassage processing finished");
+			logger.info("Http meassage processing finished");
 			
 		} catch (final Exception ex) {
 			logger.error("Problem with commnication", ex);
