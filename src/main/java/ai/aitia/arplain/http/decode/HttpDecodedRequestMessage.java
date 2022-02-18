@@ -1,5 +1,8 @@
 package ai.aitia.arplain.http.decode;
 
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -50,12 +53,12 @@ public class HttpDecodedRequestMessage {
 		if (target == null || target.length() == 0) {
 			throw new HttpDecodingException(HttpStatus.INTERNAL_SERVER_ERROR_500);
 		}
-		this.originalTarget = target;
+		this.originalTarget = URLDecoder.decode(target, StandardCharsets.US_ASCII);
 		logger.info("Target: {}", this.originalTarget);
 		
 		final StringBuilder sb = new StringBuilder();
 		boolean hasQuery = false;
-		for (char ch : target.toCharArray()) {
+		for (char ch : this.originalTarget.toCharArray()) {
 			if (!hasQuery && ch == queryStart) {
 				hasQuery = true;
 				this.targetWithoutQueryParams = sb.toString();
