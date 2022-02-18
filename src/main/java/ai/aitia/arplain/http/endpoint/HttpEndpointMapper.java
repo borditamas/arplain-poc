@@ -14,6 +14,7 @@ public class HttpEndpointMapper {
 	private static final char keyDelimiter = ':';
 	private static final char queryParamDelimiter = '&';
 	private static final char queryKeyValueDelimiter = '=';
+	private static final char pathVarDelimiter = '/';
 	
 	private static final Map<String,HttpEndpoint> mapToEndpoints = new HashMap<>();
 	private static final Map<String,Set<HttpMethod>> mapToMethods = new HashMap<>();
@@ -85,6 +86,31 @@ public class HttpEndpointMapper {
 		extracted.get(tempKey).add(tempValue);
 		
 		return extracted; //TODO return null when parsing issue
+	}
+	
+	public static List<String> extractPathVariables(final String mappedPath, final String targetWithoutQuery) {
+		if (mappedPath.length() == targetWithoutQuery.length()) {
+			return new ArrayList<>();
+		}
+		
+		char[] pathVarArray = targetWithoutQuery.substring(mappedPath.length() + 1).toCharArray();
+		final List<String> extracted = new ArrayList<>();
+		
+		final StringBuilder sb = new StringBuilder();
+		for (char ch : pathVarArray) {
+			if (ch == pathVarDelimiter) {
+				extracted.add(sb.toString());
+				sb.delete(0, sb.length());
+				
+			} else {
+				sb.append(ch);
+			}
+		}
+		if (sb.length() > 0) {
+			extracted.add(sb.toString());			
+		}
+		
+		return extracted;
 	}
 	
 	public static HttpRequestHandler findHandler(final HttpMethod method, final String path) {

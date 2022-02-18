@@ -16,13 +16,13 @@ public class HttpDecodedRequestMessage {
 	
 	private final static Logger logger = LoggerFactory.getLogger(HttpDecodedRequestMessage.class);
 	private final static char queryStart = '?';
-	private final static char queryDelim = '=';
 	
 	private HttpMethod method;
 	private String originalTarget;
 	private String targetWithoutQueryParams;
 	private Map<String, List<String>> queryParams;
 	private String path;
+	private List<String> pathVars;
 	private HttpVersion bestCompatibleVersion;
 	private String originalVersionLiteral;
 	
@@ -31,6 +31,7 @@ public class HttpDecodedRequestMessage {
 	public String getTargetWithoutQueryParams() { return targetWithoutQueryParams; }
 	public Map<String, List<String>> getQueryParams() { return queryParams; }
 	public String getPath() { return path; }
+	public List<String> getPathVars() { return pathVars; }
 	public HttpVersion getBestCompatibleVersion() { return bestCompatibleVersion; }	
 	public String getOriginalVersionLiteral() { return originalVersionLiteral; }
 	
@@ -82,7 +83,8 @@ public class HttpDecodedRequestMessage {
 		this.path = mappedPath;
 		logger.info("Path: {}", this.path);
 		
-		//TODO path variables
+		this.pathVars = HttpEndpointMapper.extractPathVariables(this.path, this.targetWithoutQueryParams);
+		logger.info("PathVariables extracted");
 	}
 	
 	public void parseVersion(final String versionStr) throws HttpDecodingException {
