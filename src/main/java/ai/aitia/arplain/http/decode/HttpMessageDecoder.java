@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,21 +23,23 @@ public class HttpMessageDecoder {
 	private final static Logger logger = LoggerFactory.getLogger(HttpMessageDecoder.class);
 	
 	public HttpDecodedRequestMessage decode(final InputStream in) throws IOException, HttpDecodingException {
-		final InputStreamReader reader = new InputStreamReader(in, StandardCharsets.US_ASCII);
-		final HttpDecodedRequestMessage decodedInbound = new HttpDecodedRequestMessage();
-		
-		parseRequestLine(reader, decodedInbound);
-		
-		//TODO headers
-		//TODO body
-		
-		if (decodedInbound.getMethod() == null) {
-			logger.info("No incoming HTTP message has arrived");
-			return null;
+		try(final InputStreamReader reader = new InputStreamReader(in, StandardCharsets.US_ASCII)) {
+			final HttpDecodedRequestMessage decodedInbound = new HttpDecodedRequestMessage();
+			
+			parseRequestLine(reader, decodedInbound);
+			if (decodedInbound.getMethod() == null) {
+				logger.info("No incoming HTTP message has arrived");
+				return null;
+			}
+			
+			parseHeaders(reader, decodedInbound);
+			
+			parseBody(in, decodedInbound);
+			
+			
+			logger.info("Incoming HTTP message decoded");
+			return decodedInbound;			
 		}
-		
-		logger.info("Incoming HTTP message decoded");
-		return decodedInbound;
 	}
 	
 	private void parseRequestLine(final InputStreamReader reader, final HttpDecodedRequestMessage request) throws IOException, HttpDecodingException {
@@ -85,4 +89,42 @@ public class HttpMessageDecoder {
 		}
 	}
 	
+	private void parseHeaders(final InputStreamReader reader, final HttpDecodedRequestMessage request) throws IOException, HttpDecodingException {
+		final StringBuilder processingDataBuffer = new StringBuilder();
+		final List<String> rawHeaders = new ArrayList<>();
+		
+		int byte_;
+		while ((byte_ = reader.read()) >= 0) {
+			if (byte_ == CR) {
+				byte_ = reader.read();
+				if (byte_ == LF) {
+					byte_ = reader.read();
+					if (byte_ == CR) {
+						byte_ = reader.read();
+						if (byte_ == LF) {
+							//End of headers							
+							return;
+						} else {
+							throw new HttpDecodingException(HttpStatus.BAD_REQUEST_400);
+						}
+					} else {
+						//new header begins
+						rawHeaders.add(processingDataBuffer.toString());
+						processingDataBuffer.delete(0, processingDataBuffer.length());
+					}
+				} else {
+					throw new HttpDecodingException(HttpStatus.BAD_REQUEST_400);
+				}
+			}
+			
+			processingDataBuffer.append((char)byte_);
+		}
+		
+		request.parseHeaders(rawHeaders);
+	}
+	
+	private void parseBody(final InputStream in, final HttpDecodedRequestMessage request) throws IOException {
+		//TODO read only until according to the content length
+		request.setBodyByteArray(in.readAllBytes());
+	}
 }

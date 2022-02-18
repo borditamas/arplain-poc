@@ -1,8 +1,8 @@
 package ai.aitia.arplain.http.decode;
 
 import java.net.URLDecoder;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +29,10 @@ public class HttpDecodedRequestMessage {
 	private HttpVersion bestCompatibleVersion;
 	private String originalVersionLiteral;
 	
+	private List<String> rawHeaders;
+	
+	private byte[] bodyByteArray;
+	
 	public HttpMethod getMethod() { return method; }
 	public String getOriginalTarget() { return originalTarget; }
 	public String getTargetWithoutQueryParams() { return targetWithoutQueryParams; }
@@ -36,7 +40,8 @@ public class HttpDecodedRequestMessage {
 	public String getPath() { return path; }
 	public List<String> getPathVars() { return pathVars; }
 	public HttpVersion getBestCompatibleVersion() { return bestCompatibleVersion; }	
-	public String getOriginalVersionLiteral() { return originalVersionLiteral; }
+	public String getOriginalVersionLiteral() { return originalVersionLiteral; }	
+	public byte[] getBodyByteArray() { return bodyByteArray; }
 	
 	public void parseMethod(final String methodStr) throws HttpDecodingException {
 		for (final HttpMethod httpMethod : HttpMethod.values()) {
@@ -58,7 +63,7 @@ public class HttpDecodedRequestMessage {
 		
 		final StringBuilder sb = new StringBuilder();
 		boolean hasQuery = false;
-		for (char ch : this.originalTarget.toCharArray()) {
+		for (final char ch : this.originalTarget.toCharArray()) {
 			if (!hasQuery && ch == queryStart) {
 				hasQuery = true;
 				this.targetWithoutQueryParams = sb.toString();
@@ -106,4 +111,13 @@ public class HttpDecodedRequestMessage {
 			}
 		}
 	}
+	
+	public void parseHeaders(final List<String> rawHeaders) {
+		this.rawHeaders = rawHeaders;
+		//TODO parse headers
+	}
+	
+	public void setBodyByteArray(final byte[] bodyByteArray) {
+		this.bodyByteArray = bodyByteArray;
+	}	
 }
